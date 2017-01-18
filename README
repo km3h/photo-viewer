@@ -1,0 +1,10 @@
+km3h
+
+** This app:
+- is adaptive to all iphones and ipads and orientations
+- is in swift
+- is responsive
+- object graph looks like rootVC = navigationVC -> LandingVC -> SplitVC -> AlbumsVC + PhotosVC -> PhotoVC (saving image)
+- uses the web data source: http://jsonplaceholder.typicode.com/photos
+- does not use third party software
+- is online/offline capable
