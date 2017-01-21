@@ -19,7 +19,7 @@ class AlbumViewController: UITableViewController
     {
         super.init(coder: aDecoder)
         let selector = Selector(("backButtonTapped"))
-        let backButtonItem = UIBarButtonItem.init(barButtonSystemItem: .cancel, target: self.splitViewController, action: selector)
+        let backButtonItem = UIBarButtonItem(barButtonSystemItem: .cancel, target: self.splitViewController, action: selector)
         self.navigationItem.leftBarButtonItem = backButtonItem
     }
     

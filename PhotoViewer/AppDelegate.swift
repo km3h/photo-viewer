@@ -11,9 +11,8 @@ import UIKit
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate, UISplitViewControllerDelegate
 {
-    
     var window: UIWindow?
-    let appController = UINavigationController.init()
+    let appController = UINavigationController()
     
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
         
@@ -27,11 +26,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UISplitViewControllerDele
         URLCache.shared = urlCache
         
         //root view setup
-        let landingViewController = LandingViewController.init();
+        let landingViewController = LandingViewController();
         self.appController.pushViewController(landingViewController, animated: false);
         
         //set main view path to display in app
-        let storyboard = UIStoryboard.init(name: "AlbumsPhotosSplitVC", bundle: nil)
+        let storyboard = UIStoryboard(name: "AlbumsPhotosSplitVC", bundle: nil)
         let splitViewController = storyboard.instantiateInitialViewController() as! AlbumsPhotosSplitVC
         let navigationController = splitViewController.viewControllers[splitViewController.viewControllers.count-1] as! UINavigationController
         navigationController.topViewController!.navigationItem.leftBarButtonItem = splitViewController.displayModeButtonItem
@@ -54,6 +53,5 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UISplitViewControllerDele
         guard (secondaryAsNavController.topViewController as? PhotosViewController) != nil else { return false }
         return true
     }
-    
 }
 

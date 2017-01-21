@@ -8,7 +8,7 @@
 
 import UIKit
 
-class PhotoViewContoller: UIViewController
+class PhotoViewController : UIViewController
 {
     public var dataSource : DataSource?
     public var photo : [String:AnyObject]?

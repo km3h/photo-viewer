@@ -28,12 +28,10 @@ class LandingViewController: UIViewController, UIPickerViewDelegate, UIPickerVie
         titleLabel.textAlignment = .center
         self.view.addSubview(titleLabel)
         
-        let button = UIButton.init()
+        let button = UIButton()
         button.setTitle(NSLocalizedString("Display Photos", comment: ""), for: .normal)
         button.addTarget(nil, action: #selector(displayPhotosButtonTapped(sender:)), for: .touchUpInside)
         button.setTitleColor(UIColor.brown, for: .normal)
-        titleLabel.translatesAutoresizingMaskIntoConstraints = false
-        self.view.addSubview(titleLabel)
         button.translatesAutoresizingMaskIntoConstraints = false
         self.view.addSubview(button)
         
@@ -117,5 +115,5 @@ class LandingViewController: UIViewController, UIPickerViewDelegate, UIPickerVie
         let selectedSessionType = row == 0 ? URLSessionType.Delegate : URLSessionType.CompletionHandler
         dataSource.urlSessionType = selectedSessionType
         self.displaySelectedSessionType(sessionType: selectedSessionType)
-    }    
+    }
 }

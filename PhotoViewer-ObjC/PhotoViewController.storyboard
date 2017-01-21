@@ -13,7 +13,7 @@
         <!--Photo View Controller-->
         <scene sceneID="fdN-R8-7gd">
             <objects>
-                <viewController id="qd5-Sk-mLi" customClass="PhotoViewController" customModule="PhotoViewer" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController id="qd5-Sk-mLi" customClass="PhotoViewController" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="LP0-7h-TwP"/>
                         <viewControllerLayoutGuide type="bottom" id="tGG-e7-cjV"/>

@@ -92,13 +92,13 @@ class DataSource: NSObject
                         return
                     }
                     
-                    guard let handler2 = self.handler else
+                    guard let handler = self.handler else
                     {
                         print("Error with Json3: \(error)")
                         return
                     }
                     
-                    handler2(self.transformData(json: json))
+                    handler(self.transformData(json: json))
                     
                 }
                 catch
@@ -122,8 +122,7 @@ class DataSource: NSObject
         }
         else
         {
-            var taskOffline : URLSessionDataTask?
-            taskOffline = self.getSession(handler : taskHandlerOffline)?.dataTask(with: self.urlRequestOffline!)
+            let taskOffline = self.getSession(handler : taskHandlerOffline)?.dataTask(with: self.urlRequestOffline!)
             taskOffline?.resume() // read from nsurlcache if offline
         }
     }
@@ -189,13 +188,9 @@ class DataSource: NSObject
         {
             if let albumName = photo["albumId"] as? NSNumber
             {
-                if (albumName.intValue == 1)
+                if transformedData[albumName] != nil
                 {
-                    
-                }
-                if var photoArray = transformedData[albumName] {
-                    photoArray.append(photo as! [String : AnyObject])
-                    transformedData[albumName] = photoArray;
+                    transformedData[albumName]!.append(photo as! [String : AnyObject])
                 }
                 else
                 {
@@ -240,7 +235,7 @@ class DataSource: NSObject
                 {
                     let data = try Data(contentsOf: URL(string: photoPath)!)
                     let getImage = UIImage(data: data)
-                    try UIImageJPEGRepresentation(getImage!, 100)?.write(to: fileURL)
+                    try data.write(to: fileURL)
                     DispatchQueue.main.async {
                         handler(getImage)
                     }

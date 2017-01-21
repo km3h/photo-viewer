@@ -28,12 +28,12 @@ class PhotosViewController: UIViewController, UICollectionViewDataSource, UIColl
         
         // collection view layout
         let collectionViewLayout = UICollectionViewFlowLayout()
-        collectionViewLayout.itemSize = CGSize.init(width: 100, height: 100)
+        collectionViewLayout.itemSize = CGSize(width: 100, height: 100)
         collectionViewLayout.minimumInteritemSpacing = PhotosViewControllerConstants.cellMargin
         collectionViewLayout.minimumLineSpacing = PhotosViewControllerConstants.cellMargin
         
         //setup collection view
-        collectionView = UICollectionView.init(frame: CGRect.zero, collectionViewLayout: collectionViewLayout)
+        collectionView = UICollectionView(frame: CGRect.zero, collectionViewLayout: collectionViewLayout)
         collectionView?.dataSource = self
         collectionView?.delegate = self
         collectionView?.register(UICollectionViewCell.self, forCellWithReuseIdentifier: "Cell")
@@ -104,7 +104,7 @@ class PhotosViewController: UIViewController, UICollectionViewDataSource, UIColl
     {
         let collectionCell = collectionView.dequeueReusableCell(withReuseIdentifier: "Cell", for: indexPath)
         
-        let imageView = UIImageView.init();
+        let imageView = UIImageView();
         imageView.translatesAutoresizingMaskIntoConstraints = false
         collectionCell.contentView.addSubview(imageView);
         
@@ -122,14 +122,14 @@ class PhotosViewController: UIViewController, UICollectionViewDataSource, UIColl
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath)
     {
-        let storyboard = UIStoryboard.init(name: "PhotoViewController", bundle: nil)
-        let controller = storyboard.instantiateInitialViewController() as! PhotoViewContoller
+        let storyboard = UIStoryboard(name: "PhotoViewController", bundle: nil)
+        let controller = storyboard.instantiateInitialViewController() as! PhotoViewController
         controller.photo = self.photos?[indexPath.row];
         controller.dataSource = self.dataSource
-        controller.navigationItem.leftBarButtonItem = UIBarButtonItem.init(barButtonSystemItem: .cancel, target: self, action: #selector(photoViewControllerCancelTapped))
-        controller.navigationItem.rightBarButtonItem = UIBarButtonItem.init(barButtonSystemItem: .save, target: self, action: #selector(photoViewControllerSaveTapped))
+        controller.navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .cancel, target: self, action: #selector(photoViewControllerCancelTapped))
+        controller.navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .save, target: self, action: #selector(photoViewControllerSaveTapped))
         
-        let navigationController = UINavigationController.init(rootViewController: controller)
+        let navigationController = UINavigationController(rootViewController: controller)
         navigationController.modalPresentationStyle = .formSheet
         self.present(navigationController, animated: true, completion: nil)
     }

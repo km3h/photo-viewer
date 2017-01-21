@@ -21,7 +21,6 @@ class SessionDelegate: NSObject
     }
 }
 
-
 extension SessionDelegate : URLSessionDelegate
 {
     func urlSession(_ session: URLSession, didBecomeInvalidWithError error: Error?)
