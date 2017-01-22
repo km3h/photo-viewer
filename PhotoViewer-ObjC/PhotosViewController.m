@@ -80,7 +80,7 @@
 
 -(void)reloadData
 {
-    [self.dataSource dataHandler: ^(NSDictionary *json) {
+    [self.dataSource photoDictionary: ^(NSDictionary *json) {
         dispatch_async(dispatch_get_main_queue(), ^{
             self.photos = json[self.albumId];
             [self.collectionView reloadData];
@@ -96,10 +96,8 @@
     return self.photos.count;
 }
 
-
 -(UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath
 {
-    
     UICollectionViewCell *collectionCell = [self.collectionView dequeueReusableCellWithReuseIdentifier:@"Cell" forIndexPath:indexPath];
     
     UIImageView *imageView = [[UIImageView alloc] init];
@@ -111,7 +109,7 @@
     [imageView.topAnchor constraintEqualToAnchor:collectionCell.contentView.topAnchor].active = YES;
     [imageView.bottomAnchor constraintEqualToAnchor:collectionCell.contentView.bottomAnchor].active = YES;
     
-    [self.dataSource photo:DataSourcePhotoTypeThumnail photo:self.photos[indexPath.row] handler:^(UIImage *image) {
+    [self.dataSource photo:DataSourcePhotoTypeThumnail photo:self.photos[indexPath.row] completionHandler:^(UIImage *image) {
         imageView.image = image;
     }];
     
@@ -142,7 +140,7 @@
 {
     NSInteger row = ((NSIndexPath*)[self.collectionView.indexPathsForSelectedItems firstObject]).row;
     
-    [self.dataSource photo:DataSourcePhotoTypeFullPhoto photo:self.photos[row] handler:^(UIImage *image) {
+    [self.dataSource photo:DataSourcePhotoTypeFullPhoto photo:self.photos[row] completionHandler:^(UIImage *image) {
         UIImageWriteToSavedPhotosAlbum(image, self, @selector(imageSaveCompletion:didFinishSavingWithError:contextInfo:), nil);
 
     }];
@@ -150,7 +148,6 @@
 
 -(void)imageSaveCompletion:(UIImage *)image didFinishSavingWithError:(NSError *)error contextInfo:(void *)contextInfo
 {
-    
     UIAlertController *ac = [UIAlertController alertControllerWithTitle:@"Save Error" message:error.localizedDescription preferredStyle:UIAlertControllerStyleAlert];
     UIAlertAction *alertAction = [UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault handler:nil];
     [ac addAction:alertAction];
@@ -160,8 +157,7 @@
         ac.title = @"Saved";
         ac.message = @"The image was saved to your photos.";
     }
-    
-    [self presentViewController:ac animated:YES completion:nil];
+    [self.presentedViewController presentViewController:ac animated:YES completion:nil];
 }
 
 @end

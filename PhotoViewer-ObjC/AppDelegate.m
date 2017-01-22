@@ -3,7 +3,7 @@
 //  PhotoViewer
 //
 //  Created by ASIM27 on 1/20/17.
-//  Copyright © 2017 ASIM27. All rights reserved.
+//  Copyright © 2017 km3h. All rights reserved.
 //
 
 #import "AppDelegate.h"
@@ -17,9 +17,8 @@
 
 @implementation AppDelegate
 
-
-- (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
-    
+- (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
+{
     //setup
     UIColor *color = [UIColor colorWithRed:0.13 green:0.10 blue:0.09 alpha:1.0];
     [UINavigationBar appearance].tintColor = color;
@@ -48,7 +47,6 @@
     self.window.backgroundColor = [UIColor whiteColor];
     self.window.rootViewController = self.appController;
     [self.window makeKeyAndVisible];
-    
     
     return YES;
 }

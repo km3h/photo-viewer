@@ -14,8 +14,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UISplitViewControllerDele
     var window: UIWindow?
     let appController = UINavigationController()
     
-    func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
-        
+    func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool
+    {
         //setup
         let color = UIColor(red:0.13, green:0.10, blue:0.09, alpha:1.0)
         UINavigationBar.appearance().tintColor = color

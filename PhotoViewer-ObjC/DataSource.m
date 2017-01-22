@@ -12,9 +12,10 @@
 @interface DataSource ()
 @property (strong, nonatomic) NSURLRequest *urlRequest;
 @property (strong, nonatomic) NSURLRequest *urlRequestOffline;
-@property (nonatomic, copy, nullable) void (^handler) (NSDictionary *);
-@property (nonatomic, copy, nullable) void (^taskHandler) (NSData*, NSURLResponse*, NSError*);
-@property (nonatomic, copy, nullable) void (^taskHandlerOffline) (NSData*, NSURLResponse*, NSError*);
+@property (weak, nonatomic) NSURLSession *urlSession;
+@property (nonatomic, copy, nullable) void (^photoDictionaryCompletionHandler) (NSDictionary *);
+@property (nonatomic, copy, nullable) void (^taskCompletionHandler) (NSData*, NSURLResponse*, NSError*);
+@property (nonatomic, copy, nullable) void (^taskOfflineCompletionHandler) (NSData*, NSURLResponse*, NSError*);
 
 @end
 
@@ -25,16 +26,15 @@
     self = [super init];
     [self createPhotoDirectory];
     
-    void (^taskHandler) (NSData*, NSURLResponse*, NSError *) = ^(NSData *data, NSURLResponse *response, NSError *error){
-        [self taskProcessor:data response:response error:error];
+    __weak DataSource *weakSelf = self;
+    self.taskCompletionHandler = ^(NSData *data, NSURLResponse *response, NSError *error) {
+        [weakSelf taskProcessor:data response:response error:error];
     };
     
-    void (^taskHandlerOffline) (NSData*, NSURLResponse*, NSError *) = ^(NSData *data, NSURLResponse *response, NSError *error){
-        [self taskProcessor:data response:response error:error];
+    self.taskOfflineCompletionHandler = ^(NSData *data, NSURLResponse *response, NSError *error) {
+        [weakSelf taskProcessorOffline:data response:response error:error];
     };
     
-    self.taskHandler = taskHandler;
-    self.taskHandlerOffline = taskHandlerOffline;
     return self;
 }
 
@@ -59,7 +59,6 @@
     {
         [[NSFileManager defaultManager] createDirectoryAtPath:dataPath withIntermediateDirectories:NO attributes:nil error:NULL];
     }
-    
 }
 
 -(void)genericTaskProcessor:(NSData*)data response:(NSURLResponse*)urlResponse error:(NSError*)error
@@ -74,7 +73,7 @@
                 return;
             }
             NSArray *json = [self serializeJson:data];
-            self.handler([self transformData:json]);
+            self.photoDictionaryCompletionHandler([self transformData:json]);
         }
     }
 }
@@ -85,14 +84,26 @@
     {
         NSLog(@"error %@", error);
     }
-
+    
     if (urlResponse != nil )
     {
         [self genericTaskProcessor:data response: urlResponse error: error];
     }
     else
     {
-        NSURLSessionDataTask *dataTask = [[self getSessionWithHandler:self.taskHandlerOffline] dataTaskWithRequest:self.urlRequestOffline completionHandler:self.taskHandler];
+        NSURLSessionDataTask *dataTask;
+        switch (self.urlSessionType)
+        {
+            case URLSessionTypeDefault:
+            case URLSessionTypeDelegate:
+                dataTask = [[self getSessionWithCompletionHandler:self.taskOfflineCompletionHandler] dataTaskWithRequest:self.urlRequestOffline];
+                break;
+            case URLSessionTypeCompletionHandler:
+                dataTask = [[NSURLSession sessionWithConfiguration:[NSURLSessionConfiguration defaultSessionConfiguration]]  dataTaskWithRequest:self.urlRequestOffline completionHandler:self.taskOfflineCompletionHandler];
+                break;
+            default:
+                break;
+        }
         [dataTask resume];
     }
 }
@@ -103,26 +114,26 @@
     {
         NSLog(@"error %@", error);
     }
-
+    
     if (urlResponse != nil )
     {
         [self genericTaskProcessor:data response: urlResponse error: error];
     }
 }
 
--(void)dataHandler:(void (^) (NSDictionary *)) handler
+-(void)photoDictionary:(void (^) (NSDictionary *)) completionHandler
 {
     NSURLSessionDataTask *dataTask;
-    self.handler = handler;
+    self.photoDictionaryCompletionHandler = completionHandler;
     
     switch (self.urlSessionType)
     {
         case URLSessionTypeDefault:
         case URLSessionTypeDelegate:
-            dataTask = [[self getSessionWithHandler:self.taskHandler] dataTaskWithRequest:self.urlRequest];
+            dataTask = [[self getSessionWithCompletionHandler:self.taskCompletionHandler] dataTaskWithRequest:self.urlRequest];
             break;
         case URLSessionTypeCompletionHandler:
-            dataTask = [[self getSessionWithHandler:self.taskHandler] dataTaskWithRequest:self.urlRequest completionHandler:self.taskHandler];
+            dataTask = [[NSURLSession sessionWithConfiguration:[NSURLSessionConfiguration defaultSessionConfiguration]]  dataTaskWithRequest:self.urlRequest completionHandler:self.taskCompletionHandler];
             break;
         default:
             break;
@@ -130,10 +141,9 @@
     
     [dataTask resume];
 }
-
--(NSURLSession*)getSessionWithHandler:(void (^) (NSData*, NSURLResponse*, NSError*))handler
+-(NSURLSession*)getSessionWithCompletionHandler:(void (^) (NSData*, NSURLResponse*, NSError*))completionHandler
 {
-    SessionDelegate *delegate = [[SessionDelegate alloc] initWithHandler:handler];
+    SessionDelegate *delegate = [[SessionDelegate alloc] initWithCompletionHandler:completionHandler];
     NSURLSession *session = [NSURLSession sessionWithConfiguration:[NSURLSessionConfiguration defaultSessionConfiguration] delegate:delegate delegateQueue:nil];
     return session;
 }
@@ -151,7 +161,7 @@
 -(NSDictionary*)transformData:(NSArray*)json
 {
     NSMutableDictionary *transformedData = [NSMutableDictionary dictionaryWithCapacity:json.count];
-
+    
     for (NSDictionary *photo in json)
     {
         NSNumber *albumName = photo[@"albumId"];
@@ -167,16 +177,17 @@
     return transformedData;
 }
 
--(void)photo:(DataSourcePhotoType)photoType photo:(NSDictionary*)photo handler: (void (^) (UIImage*)) handler
+-(void)photo:(DataSourcePhotoType)photoType photo:(NSDictionary*)photo completionHandler: (void (^) (UIImage*)) completionHandler
 {
     NSString *photoName = photo[@"id"];
     NSURL *documentsURL = [[[NSFileManager defaultManager] URLsForDirectory:NSDocumentDirectory inDomains:NSUserDomainMask] firstObject];
-
+    
     NSString *filePath;
     NSString *photoPath;
     NSString *photoSize;
     
-    if  (photoType == DataSourcePhotoTypeThumnail) {
+    if  (photoType == DataSourcePhotoTypeThumnail)
+    {
         photoSize = @"thumbnail";
         photoPath = photo[@"thumbnailUrl"];
     }
@@ -188,21 +199,20 @@
     
     NSString *pathComponent = [NSString stringWithFormat:@"images/%@_%@.png", photoName, photoSize];
     filePath = [documentsURL URLByAppendingPathComponent:pathComponent].path;
-
+    
     if ([[NSFileManager defaultManager] fileExistsAtPath:filePath])
     {
-        handler([UIImage imageWithContentsOfFile:filePath]);
+        completionHandler([UIImage imageWithContentsOfFile:filePath]);
     }
     else
     {
         NSURL *fileURL = [NSURL fileURLWithPath:filePath];
-
         dispatch_async(dispatch_get_global_queue( DISPATCH_QUEUE_PRIORITY_DEFAULT, 0),  ^{
             NSData *data = [NSData dataWithContentsOfURL:[NSURL URLWithString:photoPath]];
             UIImage *getImage = [UIImage imageWithData:data];
             [data writeToURL:fileURL atomically:YES];
             dispatch_async(dispatch_get_main_queue(), ^{
-                handler(getImage);
+                completionHandler(getImage);
             });
         });
     }

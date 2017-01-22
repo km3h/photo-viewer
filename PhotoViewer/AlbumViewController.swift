@@ -42,7 +42,7 @@ class AlbumViewController: UITableViewController
     
     public func reloadData()
     {
-        self.dataSource?.data() { json in
+        self.dataSource?.photoDictionary() { json in
             DispatchQueue.main.async() {
                 let keys = json?.keys
                 let sortedKeys = keys?.sorted() { n1, n2 in

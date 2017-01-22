@@ -8,8 +8,8 @@
 
 import UIKit
 
-class LandingViewController: UIViewController, UIPickerViewDelegate, UIPickerViewDataSource, UITextFieldDelegate {
-    
+class LandingViewController: UIViewController, UIPickerViewDelegate, UIPickerViewDataSource, UITextFieldDelegate
+{
     public var albumsPhotosSplitVC : AlbumsPhotosSplitVC?
     var dataSource : DataSource = DataSource()
     var typePickerView: UIPickerView = UIPickerView()
@@ -61,7 +61,8 @@ class LandingViewController: UIViewController, UIPickerViewDelegate, UIPickerVie
         self.view.addGestureRecognizer(tapRecognizer)
     }
     
-    override func viewDidLoad() {
+    override func viewDidLoad()
+    {
         super.viewDidLoad()
         self.typePickerView.dataSource = self
         self.typePickerView.delegate = self

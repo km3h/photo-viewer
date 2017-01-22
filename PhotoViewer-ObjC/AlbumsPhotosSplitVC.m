@@ -15,7 +15,8 @@
 
 @implementation AlbumsPhotosSplitVC
 
-- (void)viewDidLoad {
+- (void)viewDidLoad
+{
     [super viewDidLoad];
     UINavigationController *navigationController = (UINavigationController*)self.viewControllers[0];
     AlbumViewController *albumViewController = (AlbumViewController*)navigationController.topViewController;

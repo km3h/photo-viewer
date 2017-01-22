@@ -68,7 +68,6 @@ extension SessionDelegate : URLSessionTaskDelegate
     
     func urlSession(_ session: URLSession, task: URLSessionTask, didFinishCollecting metrics: URLSessionTaskMetrics)
     {
-        
     }
 }
 

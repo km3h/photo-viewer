@@ -8,17 +8,17 @@
 
 #import "SessionDelegate.h"
 
-@interface SessionDelegate () 
+@interface SessionDelegate ()
 @property (strong, nonatomic) NSMutableData *dataReceived;
-@property (nonatomic, copy, nullable) void (^handler) (NSData*, NSURLResponse*, NSError*);
+@property (nonatomic, copy, nullable) void (^completionHandler) (NSData*, NSURLResponse*, NSError*);
 @end
 
 @implementation SessionDelegate
 
--(instancetype)initWithHandler:(void (^) (NSData*, NSURLResponse*, NSError*)) handler
+-(instancetype)initWithCompletionHandler:(void (^) (NSData*, NSURLResponse*, NSError*)) completionHandler
 {
     self = [super init];
-    self.handler = handler;
+    self.completionHandler = completionHandler;
     self.dataReceived = [[NSMutableData alloc] init];
     return self;
 }
@@ -30,7 +30,7 @@
 
 -(void)URLSession:(NSURLSession *)session task:(NSURLSessionTask *)task didCompleteWithError:(NSError *)error
 {
-    self.handler(self.dataReceived, task.response, nil);
+    self.completionHandler(self.dataReceived, task.response, nil);
 }
 
 @end

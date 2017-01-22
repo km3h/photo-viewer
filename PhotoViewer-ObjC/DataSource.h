@@ -22,10 +22,9 @@ typedef enum URLSessionType
     URLSessionTypeDefault
 } URLSessionType;
 
-
 @interface DataSource : NSObject
 @property (strong, nonatomic) NSString *urlString;
 @property enum URLSessionType urlSessionType;
--(void)dataHandler:(void (^) (NSDictionary *)) handler;
--(void)photo:(DataSourcePhotoType)photoType photo:(NSDictionary*)photo handler: (void (^) (UIImage*)) handler;
+-(void)photoDictionary:(void (^) (NSDictionary *)) completionHandler;
+-(void)photo:(DataSourcePhotoType)photoType photo:(NSDictionary*)photo completionHandler: (void (^) (UIImage*)) completionHandler;
 @end

@@ -9,5 +9,5 @@
 #import <Foundation/Foundation.h>
 
 @interface SessionDelegate : NSObject <NSURLSessionDataDelegate>
--(instancetype)initWithHandler:(void (^) (NSData*, NSURLResponse*, NSError*)) handler;
+-(instancetype)initWithCompletionHandler:(void (^) (NSData*, NSURLResponse*, NSError*)) handler;
 @end

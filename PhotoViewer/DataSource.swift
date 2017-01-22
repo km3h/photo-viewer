@@ -140,10 +140,10 @@ class DataSource: NSObject
         }
     }
     
-    public func data(handler : @escaping ([NSNumber : [[String : AnyObject]]]?) -> Void)
+    public func photoDictionary(completionHandler : @escaping ([NSNumber : [[String : AnyObject]]]?) -> Void)
     {
         var dataTask : URLSessionDataTask?
-        self.handler = handler
+        self.handler = completionHandler
         
         switch self.urlSessionType
         {
@@ -165,7 +165,8 @@ class DataSource: NSObject
     
     func serializeJson(json data : Data?) -> [NSDictionary]?
     {
-        if let data = data {
+        if let data = data
+        {
             do
             {
                 let json = try JSONSerialization.jsonObject(with: data, options:.allowFragments) as? [NSDictionary]
@@ -203,7 +204,7 @@ class DataSource: NSObject
         return transformedData
     }
     
-    public func photo (photoType: DataSourcePhotoType , photo : [String:AnyObject]?, handler : @escaping (UIImage?) -> Void)
+    public func photo (photoType: DataSourcePhotoType , photo : [String:AnyObject]?, completionHandler : @escaping (UIImage?) -> Void)
     {
         guard let photoName = photo?["id"] else {
             return
@@ -212,7 +213,8 @@ class DataSource: NSObject
         let documentsURL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
         let filePath : String
         let photoPath : String
-        if  photoType == .THUMBNAIL {
+        if  photoType == .THUMBNAIL
+        {
             filePath = documentsURL.appendingPathComponent("images/\(photoName)_thumbnail.png").path
             photoPath = photo!["thumbnailUrl"] as! String
         }
@@ -224,12 +226,11 @@ class DataSource: NSObject
         
         if FileManager.default.fileExists(atPath: filePath)
         {
-            handler(UIImage(contentsOfFile: filePath))
+            completionHandler(UIImage(contentsOfFile: filePath))
         }
         else
         {
             let fileURL = URL(fileURLWithPath: filePath)
-            
             DispatchQueue.global(qos: DispatchQoS.background.qosClass).async {
                 do
                 {
@@ -237,7 +238,7 @@ class DataSource: NSObject
                     let getImage = UIImage(data: data)
                     try data.write(to: fileURL)
                     DispatchQueue.main.async {
-                        handler(getImage)
+                        completionHandler(getImage)
                     }
                 }
                 catch
@@ -247,5 +248,4 @@ class DataSource: NSObject
             }
         }
     }
-    
 }

@@ -14,9 +14,10 @@
 
 @implementation PhotoViewController
 
-- (void)viewDidLoad {
+- (void)viewDidLoad
+{
     [super viewDidLoad];
-    [self.dataSource photo:DataSourcePhotoTypeFullPhoto photo:self.photo handler:^(UIImage *image) {
+    [self.dataSource photo:DataSourcePhotoTypeFullPhoto photo:self.photo completionHandler:^(UIImage *image) {
         self.imageView.image = image;
     }];
 }

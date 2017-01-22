@@ -52,16 +52,19 @@ class PhotosViewController: UIViewController, UICollectionViewDataSource, UIColl
     {
         self.reloadData()
         self.setLayout(size: self.view.bounds.size)
-        if let albumId = self.albumId {
+        if let albumId = self.albumId
+        {
             self.title = "Album \(albumId)"
         }
-        else {
+        else
+        {
             self.title = "Select Album"
         }
         super.viewWillAppear(animated)
     }
     
-    override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
+    override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator)
+    {
         super.viewWillTransition(to: size, with: coordinator)
         self.setLayout(size: size)
     }
@@ -79,7 +82,7 @@ class PhotosViewController: UIViewController, UICollectionViewDataSource, UIColl
     
     public func reloadData()
     {
-        self.dataSource?.data() { json in
+        self.dataSource?.photoDictionary() { json in
             DispatchQueue.main.async() {
                 self.photos = json?[self.albumId!]
                 self.collectionView?.reloadData()
@@ -91,7 +94,8 @@ class PhotosViewController: UIViewController, UICollectionViewDataSource, UIColl
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int
     {
-        if let photos = self.photos {
+        if let photos = self.photos
+        {
             return photos.count
         }
         else

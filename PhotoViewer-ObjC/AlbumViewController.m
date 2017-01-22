@@ -40,7 +40,7 @@
 
 -(void)reloadData
 {
-    [self.dataSource dataHandler:^(NSDictionary *json) {
+    [self.dataSource photoDictionary:^(NSDictionary *json) {
         dispatch_sync(dispatch_get_main_queue(), ^{
             NSArray *keys = [json allKeys];
             NSArray *sortedKeys = [keys sortedArrayUsingComparator:^NSComparisonResult(id  _Nonnull n1, id  _Nonnull n2) { return [n1 intValue] > [n2 intValue];}];
